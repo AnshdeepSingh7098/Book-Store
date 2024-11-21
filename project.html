@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Online Bookstore</title>
+  <style>
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    header {
+      background-color: #3e8e41;
+      color: #fff;
+      padding: 15px 0;
+      text-align: center;
+      position: relative;
+    }
+
+    header h1 {
+      font-size: 3em;
+      margin-bottom: 10px;
+    }
+
+    header h1 span {
+      color: #ff9900;
+    }
+
+    .cart {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+    }
+
+    .cart button {
+      background-color: #ff9900;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 1.1em;
+      border-radius: 5px;
+    }
+
+    .cart button:hover {
+      background-color: #e68900;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    .book-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .book {
+      background-color: #fff;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      border-radius: 10px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .book img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      transition: transform 0.3s ease;
+    }
+
+    .book h2 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .book p {
+      margin-bottom: 10px;
+      font-size: 1.1em;
+      color: #555;
+    }
+
+    .price {
+      font-weight: bold;
+      color: #ff9900;
+      font-size: 1.2em;
+    }
+
+    .add-to-cart, .buy-now {
+      background-color: #3e8e41;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      cursor: pointer;
+      font-size: 1em;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .add-to-cart:hover, .buy-now:hover {
+      background-color: #2f6b32;
+    }
+
+    .book:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .book img:hover {
+      transform: scale(1.05);
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #3e8e41;
+      color: white;
+      margin-top: 30px;
+    }
+
+  
+    .cart-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .cart-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-content h2 {
+      margin-bottom: 20px;
+      font-size: 2em;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .cart-item img {
+      width: 50px;
+      height: 75px;
+      margin-right: 15px;
+      object-fit: cover;
+    }
+
+    .close-cart {
+      margin-top: 20px;
+      background-color: #ff9900;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      cursor: pointer;
+      font-size: 1.2em;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    .close-cart:hover {
+      background-color: #e68900;
+    }
+
+   
+    .contact-us {
+      background-color: #3e8e41;
+      color: white;
+      padding: 40px 20px;
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .contact-us h2 {
+      margin-bottom: 20px;
+    }
+
+    .contact-us form {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .contact-us input, .contact-us textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+
+    .contact-us button {
+      padding: 12px 30px;
+      background-color: #ff9900;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1.1em;
+    }
+
+    .contact-us button:hover {
+      background-color: #e68900;
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Online <span>Bookstore</span></h1>
+    <div class="cart">
+      <button id="cart-button">Cart (0)</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="book-list">
+      <!-- Book 1 -->
+      <div class="book">
+        <img src="https://notionpress.com/blog/wp-content/uploads/2016/07/iconic-book-covers-.png" alt="Book 1">
+        <h2>The Book Thief </h2>
+        <p>by Author Name</p>
+        <p><strong>Markus Zusak</strong></p>
+        <p class="price">$15.99</p>
+        <button class="add-to-cart" data-book="The Book Thief " data-image="https://notionpress.com/blog/wp-content/uploads/2016/07/iconic-book-covers-.png" data-price="$15.99">Add to Cart</button>
+        <button class="buy-now" data-book="The Book Thief " data-image="https://notionpress.com/blog/wp-content/uploads/2016/07/iconic-book-covers-.png" data-price="$15.99">Buy Now</button>
+      </div>
+
+      <!-- Book 2 -->
+      <div class="book">
+        <img src="https://marketplace.canva.com/EAFfSnGl7II/2/0/1003w/canva-elegant-dark-woods-fantasy-photo-book-cover-vAt8PH1CmqQ.jpg" alt="Book 2">
+        <h2>Walk Into The Shadow</h2>
+        <p>by Author Name</p>
+        <p><strong>ESTELLE DARCY</strong></p>
+        <p class="price">$18.99</p>
+        <button class="add-to-cart" data-book="Walk Into The Shadow" data-image="https://marketplace.canva.com/EAFfSnGl7II/2/0/1003w/canva-elegant-dark-woods-fantasy-photo-book-cover-vAt8PH1CmqQ.jpg" data-price="$18.99">Add to Cart</button>
+        <button class="buy-now" data-book="Walk Into The Shadow" data-image="https://marketplace.canva.com/EAFfSnGl7II/2/0/1003w/canva-elegant-dark-woods-fantasy-photo-book-cover-vAt8PH1CmqQ.jpg" data-price="$18.99">Buy Now</button>
+      </div>
+
+      <!-- Book 3 -->
+      <div class="book">
+        <img src="https://cdn.prod.website-files.com/5a8855ffd9716c0001a4227d/5b7835585f23e81cb64a65a0_lotr.jpg" alt="Book 3">
+        <h2>THE LORD OF THE RINGS</h2>
+        <p>by Author Name</p>
+         <p><strong>J.R.R.TOLKIEN</strong></p>
+        <p class="price">$12.99</p>
+        <button class="add-to-cart" data-book="THE LORD OF THE RINGS" data-image="https://cdn.prod.website-files.com/5a8855ffd9716c0001a4227d/5b7835585f23e81cb64a65a0_lotr.jpg" data-price="$12.99">Add to Cart</button>
+        <button class="buy-now" data-book="THE LORD OF THE RINGS" data-image="https://cdn.prod.website-files.com/5a8855ffd9716c0001a4227d/5b7835585f23e81cb64a65a0_lotr.jpg" data-price="$12.99">Buy Now</button>
+      </div>
+
+      <!-- Book 4 -->
+      <div class="book">
+        <img src="https://bharatlawhouse.in/wp-content/uploads/2023/04/WhatsApp-Image-2023-04-10-at-2.11.33-AM.jpeg" alt="Book 4">
+        <h2>THE WORLD'S MOST FAMOUS COURT TRIAL</h2>
+        <p>by Author Name</p>
+         <p><strong>CLARENCE DARROW AND WILLIAM J. BRYAN</strong></p>
+        <p class="price">$25.00</p>
+        <button class="add-to-cart" data-book="THE WORLD'S MOST FAMOUS COURT TRIAL" data-image="https://bharatlawhouse.in/wp-content/uploads/2023/04/WhatsApp-Image-2023-04-10-at-2.11.33-AM.jpeg" data-price="$25.00">Add to Cart</button>
+        <button class="buy-now" data-book="THE WORLD'S MOST FAMOUS COURT TRIAL" data-image="https://bharatlawhouse.in/wp-content/uploads/2023/04/WhatsApp-Image-2023-04-10-at-2.11.33-AM.jpeg" data-price="$25.00">Buy Now</button>
+      </div>
+
+      <!-- Book 5 -->
+      <div class="book">
+        <img src="https://images.booksense.com/images/327/632/9781594632327.jpg" alt="Book 5">
+        <h2>A Teaspoon of Earth and Sea</h2>
+        <p>by Author Name</p>
+         <p><strong>Dina Nayeri</strong></p>
+        <p class="price">$19.99
+             <p><strong></strong></p>
+        </p>
+        <button class="add-to-cart" data-book="A Teaspoon of Earth and Sea" data-image="https://images.booksense.com/images/327/632/9781594632327.jpg" data-price="$19.99">Add to Cart</button>
+        <button class="buy-now" data-book="A Teaspoon of Earth and Sea" data-image="https://images.booksense.com/images/327/632/9781594632327.jpg" data-price="$19.99">Buy Now</button>
+      </div>
+
+      <!-- Book 6 -->
+      <div class="book">
+        <img src="https://www.portersquarebooks.com/sites/portersquarebooks.com/files/thegoldfinch.jpg" alt="Book 6">
+        <h2>The GOLDFINCH 81</h2>
+        <p>by Author Name</p>
+         <p><strong>DONNA TARTT</strong></p>
+        <p class="price">$20.99</p>
+        <button class="add-to-cart" data-book="The GOLDFINCH 81" data-image="https://www.portersquarebooks.com/sites/portersquarebooks.com/files/thegoldfinch.jpg" data-price="$20.99">Add to Cart</button>
+        <button class="buy-now" data-book="The GOLDFINCH 81" data-image="https://www.portersquarebooks.com/sites/portersquarebooks.com/files/thegoldfinch.jpg" data-price="$20.99">Buy Now</button>
+      </div>
+
+      <!-- Book 7 -->
+      <div class="book">
+        <img src="https://www.portersquarebooks.com/sites/portersquarebooks.com/files/josephanton.jpg" alt="Book 7">
+        <h2>Joseph Anton</h2>
+        <p>by Author Name</p>
+         <p><strong>SALMAN RUSHDIE</strong></p>
+        <p class="price">$22.50</p>
+        <button class="add-to-cart" data-book="Joseph Anton" data-image="https://www.portersquarebooks.com/sites/portersquarebooks.com/files/josephanton.jpg" data-price="$22.50">Add to Cart</button>
+        <button class="buy-now" data-book="Joseph Anton" data-image="https://www.portersquarebooks.com/sites/portersquarebooks.com/files/josephanton.jpg" data-price="$22.50">Buy Now</button>
+      </div>
+
+      <!-- Book 8 -->
+      <div class="book">
+        <img src="https://www.portersquarebooks.com/sites/portersquarebooks.com/files/divinecomedy.jpg" alt="Book 8">
+        <h2>The Divine Comedy</h2>
+        <p>by Author Name</p>
+         <p><strong>DANTE</strong></p>
+        <p class="price">$17.99</p>
+        <button class="add-to-cart" data-book="The Divine Comedy" data-image="https://www.portersquarebooks.com/sites/portersquarebooks.com/files/divinecomedy.jpg" data-price="$17.99">Add to Cart</button>
+        <button class="buy-now" data-book="The Divine Comedy" data-image="https://www.portersquarebooks.com/sites/portersquarebooks.com/files/divinecomedy.jpg" data-price="$17.99">Buy Now</button>
+      </div>
+
+      <!-- Book 9 -->
+      <div class="book">
+        <img src="https://www.portersquarebooks.com/sites/portersquarebooks.com/files/morethanthis.jpg" alt="Book 9">
+        <h2>More Than This</h2>
+        <p>by Author Name</p>
+         <p><strong>PATRICK NESS</strong></p>
+        <p class="price">$14.99</p>
+        <button class="add-to-cart" data-book="More Than This" data-image="https://www.portersquarebooks.com/sites/portersquarebooks.com/files/morethanthis.jpg" data-price="$14.99">Add to Cart</button>
+        <button class="buy-now" data-book="More Than This" data-image="https://www.portersquarebooks.com/sites/portersquarebooks.com/files/morethanthis.jpg" data-price="$14.99">Buy Now</button>
+      </div>
+
+      <!-- Book 10 -->
+      <div class="book">
+        <img src="https://www.portersquarebooks.com/sites/portersquarebooks.com/files/wealthofnations.jpg" alt="Book 10">
+        <h2>The Wealth of Nations </h2>
+        <p>by Author Name</p>
+         <p><strong>ADAM SMITH</strong></p>
+        <p class="price">$29.99</p>
+        <button class="add-to-cart" data-book="The Wealth of Nations " data-image="" data-price="$29.99">Add to Cart</button>
+        <button class="buy-now" data-book="The Wealth of Nations " data-image="https://www.portersquarebooks.com/sites/portersquarebooks.com/files/wealthofnations.jpg" data-price="$29.99">Buy Now</button>
+      </div>
+       <!-- Book 11 -->
+       <div class="book">
+        <img src="https://www.portersquarebooks.com/sites/portersquarebooks.com/files/heartofasamurai.jpg" alt="Book 11">
+        <h2>Heart of a Samurai </h2>
+        <p>by Author Name</p>
+        <p><strong>Margi Preus</strong></p>
+        <p class="price">$15.99</p>
+        <button class="add-to-cart" data-book="Heart of a Samurai " data-image="https://www.portersquarebooks.com/sites/portersquarebooks.com/files/heartofasamurai.jpg" data-price="$15.99">Add to Cart</button>
+        <button class="buy-now" data-book="Heart of a Samurai " data-image="https://www.portersquarebooks.com/sites/portersquarebooks.com/files/heartofasamurai.jpg" data-price="$15.99">Buy Now</button>
+      </div>
+
+      <!-- Book 12 -->
+      <div class="book">
+        <img src="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-71b40b91--Books.jpg?v=1620061288" alt="Book 12">
+        <h2>the Origin of Species</h2>
+        <p>by Author Name</p>
+        <p><strong Darwin>Charles Darwin</strong></p>
+        <p class="price">$18.99</p>
+        <button class="add-to-cart" data-book="the Origin of Species" data-image="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-71b40b91--Books.jpg?v=1620061288" data-price="$18.99">Add to Cart</button>
+        <button class="buy-now" data-book="the Origin of Species" data-image="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-71b40b91--Books.jpg?v=1620061288" data-price="$18.99">Buy Now</button>
+      </div>
+
+      <!-- Book 13 -->
+      <div class="book">
+        <img src="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-b40b918a--Books2.jpg?v=1620061349" alt="Book 13">
+        <h2> The Great Gatsby</h2>
+        <p>by Author Name</p>
+         <p><strong>F SCOTT FITZGERALD</strong></p>
+        <p class="price">$12.99</p>
+        <button class="add-to-cart" data-book=" The Great Gatsby" data-image="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-b40b918a--Books2.jpg?v=1620061349" data-price="$12.99">Add to Cart</button>
+        <button class="buy-now" data-book=" The Great Gatsby" data-image="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-b40b918a--Books2.jpg?v=1620061349" data-price="$12.99">Buy Now</button>
+      </div>
+
+      <!-- Book 14 -->
+      <div class="book">
+        <img src="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-0b918a84--Books3.jpg?v=1620061361" alt="Book 14">
+        <h2>The Catcher In The Rye</h2>
+        <p>by Author Name</p>
+         <p><strong> J.D. SALINGER</strong></p>
+        <p class="price">$25.00</p>
+        <button class="add-to-cart" data-book="The Catcher In The Rye" data-image="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-0b918a84--Books3.jpg?v=1620061361" data-price="$25.00">Add to Cart</button>
+        <button class="buy-now" data-book="The Catcher In The Rye" data-image="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-0b918a84--Books3.jpg?v=1620061361" data-price="$25.00">Buy Now</button>
+      </div>
+
+      <!-- Book 15 -->
+      <div class="book">
+        <img src="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-918a8430--Books4.jpg?v=1620061368" alt="Book 15">
+        <h2> 1984</h2>
+        <p>by Author Name</p>
+         <p><strong>GEORGE ORWELL</strong></p>
+        <p class="price">$19.99
+             <p><strong></strong></p>
+        </p>
+        <button class="add-to-cart" data-book=" 1984" data-image="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-918a8430--Books4.jpg?v=1620061368" data-price="$19.99">Add to Cart</button>
+        <button class="buy-now" data-book=" 1984" data-image="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-918a8430--Books4.jpg?v=1620061368" data-price="$19.99">Buy Now</button>
+      </div>
+
+      <!-- Book 16 -->
+      <div class="book">
+        <img src="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-8a8430b5--Books5.jpg?v=1620061376" alt="Book 16">
+        <h2>Lord Of The Rings Trilogy</h2>
+        <p>by Author Name</p>
+         <p><strong> J.R.R. TOLKIEN</strong></p>
+        <p class="price">$20.99</p>
+        <button class="add-to-cart" data-book="Lord Of The Rings Trilogy" data-image="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-8a8430b5--Books5.jpg?v=1620061376" data-price="$20.99">Add to Cart</button>
+        <button class="buy-now" data-book="Lord Of The Rings Trilogy" data-image="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-8a8430b5--Books5.jpg?v=1620061376" data-price="$20.99">Buy Now</button>
+      </div>
+
+      <!-- Book 17 -->
+      <div class="book">
+        <img src="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-8430b57d--Books6.jpg?v=1620061384" alt="Book 17">
+        <h2>The Bible</h2>
+        <p>by Author Name</p>
+         <p><strong>unknown</strong></p>
+        <p class="price">$22.50</p>
+        <button class="add-to-cart" data-book="The Bible" data-image="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-8430b57d--Books6.jpg?v=1620061384" data-price="$22.50">Add to Cart</button>
+        <button class="buy-now" data-book="The Bible" data-image="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-8430b57d--Books6.jpg?v=1620061384" data-price="$22.50">Buy Now</button>
+      </div>
+
+      <!-- Book 18 -->
+      <div class="book">
+        <img src="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-30b57dac--Books7.jpg?v=1620061394" alt="Book 18">
+        <h2>War And Peace</h2>
+        <p>by Author Name</p>
+         <p><strong>LEO TOLSTOY</strong></p>
+        <p class="price">$17.99</p>
+        <button class="add-to-cart" data-book="War And Peace" data-image="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-30b57dac--Books7.jpg?v=1620061394" data-price="$17.99">Add to Cart</button>
+        <button class="buy-now" data-book="War And Peace" data-image="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-30b57dac--Books7.jpg?v=1620061394" data-price="$17.99">Buy Now</button>
+      </div>
+
+      <!-- Book 19 -->
+      <div class="book">
+        <img src="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-b57dac15--Books8.jpg?v=1620061403" alt="Book 19">
+        <h2>Harry Potter Series</h2>
+        <p>by Author Name</p>
+         <p><strong>J.K. ROWLING</strong></p>
+        <p class="price">$14.99</p>
+        <button class="add-to-cart" data-book="Harry Potter Series" data-image="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-b57dac15--Books8.jpg?v=1620061403" data-price="$14.99">Add to Cart</button>
+        <button class="buy-now" data-book="Harry Potter Series" data-image="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-b57dac15--Books8.jpg?v=1620061403" data-price="$14.99">Buy Now</button>
+      </div>
+
+      <!-- Book 20 -->
+      <div class="book">
+        <img src="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-7dac1579--Books9.jpg?v=1620061411" alt="Book 20">
+        <h2> Great Expectations</h2>
+        <p>by Author Name</p>
+         <p><strong>CHARLES DICKENS</strong></p>
+        <p class="price">$29.99</p>
+        <button class="add-to-cart" data-book="Great Expectations" data-image="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-7dac1579--Books9.jpg?v=1620061411" data-price="$29.99">Add to Cart</button>
+        <button class="buy-now" data-book="Great Expectations " data-image="https://cdn.shopify.com/s/files/1/0070/1884/0133/t/8/assets/pf-7dac1579--Books9.jpg?v=1620061411" data-price="$29.99">Buy Now</button>
+      </div>
+
+   <!-- Cart Modal -->
+<div id="cart-modal" class="cart-modal"> 
+  <div class="cart-content">
+    <h2>Your Cart</h2>
+    <div id="cart-items">
+      <!-- Cart items will be listed here -->
+    </div>
+    <button class="close-cart" id="close-cart">Close</button>
+  </div>
+</div>
+
+<!-- Contact Us Section -->
+<section class="contact-us">
+  <h2>Contact Us</h2>
+  <form>
+    <input type="text" placeholder="Your Name" required>
+    <input type="email" placeholder="Your Email" required>
+    <textarea placeholder="Your Message" rows="5" required></textarea>
+    <button type="submit">Submit</button>
+  </form>
+</section>
+
+<script>
+  // Variables to track cart items
+  let cart = [];
+  const cartButton = document.getElementById('cart-button');
+  const cartModal = document.getElementById('cart-modal');
+  const closeCartButton = document.getElementById('close-cart');
+  const cartItemsContainer = document.getElementById('cart-items');
+
+  // Add to cart functionality
+  document.querySelectorAll('.add-to-cart').forEach(button => {
+    button.addEventListener('click', function () {
+      const bookTitle = this.getAttribute('data-book');
+      const bookImage = this.getAttribute('data-image');
+      const bookPrice = this.getAttribute('data-price');
+      
+      // Add book to cart array
+      cart.push({ title: bookTitle, image: bookImage, price: bookPrice });
+      
+      // Update cart button text
+      cartButton.textContent = `Cart (${cart.length})`;
+    });
+  });
+
+  // Show cart modal
+  cartButton.addEventListener('click', function () {
+    cartModal.style.display = 'flex';
+    updateCartModal();
+  });
+
+  // Close cart modal
+  closeCartButton.addEventListener('click', function () {
+    cartModal.style.display = 'none';
+  });
+
+  // Function to update the cart modal with items
+  function updateCartModal() {
+    cartItemsContainer.innerHTML = '';
+    cart.forEach(item => {
+      const itemDiv = document.createElement('div');
+      itemDiv.classList.add('cart-item');
+      itemDiv.innerHTML = `
+        <img src="${item.image}" alt="${item.title}">
+        <div>
+          <p>${item.title}</p>
+          <p>${item.price}</p>
+        </div>
+      `;
+      cartItemsContainer.appendChild(itemDiv);
+    });
+  }
+
+  // Buy Now 
+  document.querySelectorAll('.buy-now').forEach(button => {
+    button.addEventListener('click', function () {
+      const bookTitle = this.getAttribute('data-book');
+      const bookImage = this.getAttribute('data-image');
+      const bookPrice = this.getAttribute('data-price');
+      
+      alert(`You are buying: ${bookTitle}\nPrice: ${bookPrice}`);
+    });
+  });
+</script>
+
+</body>
+</html>
